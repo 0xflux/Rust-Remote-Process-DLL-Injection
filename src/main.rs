@@ -40,7 +40,8 @@ fn main() {
     let load_library_fn_address = match load_library_fn_address {
         None => panic!("[-] Could not resolve the address of LoadLibraryA."),
         Some(address) => {
-            println!("[+] Address of LoadLibraryA: {:?}", address);
+            let address = address as *const (); // better cast as per https://doc.rust-lang.org/std/mem/fn.transmute.html
+            println!("[+] Address of LoadLibraryA: {:p}", address);
             address
         }
     };
@@ -60,7 +61,7 @@ fn main() {
         panic!("[-] Failed allocating memory into remote process for DLL Path");
     }
 
-    println!("[+] Remote buffer base address: {:?}", remote_buffer_base_address);
+    println!("[+] Remote buffer base address: {:p}", remote_buffer_base_address);
 
     // Write to the buffer
     let mut bytes_written: usize = 0;
