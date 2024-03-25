@@ -33,9 +33,7 @@ fn main() {
         Err(e) => panic!("[-] Could not get handle to Kernel32.dll, {e}"),
     };
 
-    // GET HANDLE TO LOAD LIBRARY
-
-    // having to load kernel32 differently due to problems with the crate
+    // GET FUNCTION POINTER TO LOAD LIBRARY
     let load_library_fn_address = unsafe { GetProcAddress(h_kernel32, s!("LoadLibraryA")) };
     let load_library_fn_address = match load_library_fn_address {
         None => panic!("[-] Could not resolve the address of LoadLibraryA."),
