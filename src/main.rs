@@ -3,18 +3,10 @@ use std::ffi::c_void;
 use std::mem::{size_of_val};
 use std::process::exit;
 use windows::core::{s};
-use windows::core::imp::PCSTR;
 use windows::Win32::System::Threading::{CreateRemoteThread, OpenProcess, PROCESS_VM_OPERATION, PROCESS_VM_WRITE};
-use windows::Win32::System::LibraryLoader::{GetModuleHandleA};
-use windows::Win32::Foundation::{FARPROC, HMODULE};
+use windows::Win32::System::LibraryLoader::{GetModuleHandleA, GetProcAddress};
 use windows::Win32::System::Diagnostics::Debug::WriteProcessMemory;
 use windows::Win32::System::Memory::{MEM_COMMIT, MEM_RESERVE, PAGE_EXECUTE_READWRITE, VirtualAllocEx};
-
-#[link(name = "kernel32")]
-extern "stdcall" {
-    /// Get process address of a module. Returns a FARPROC, a "generic pointer to any function".
-    fn GetProcAddress(h_module: HMODULE, lp_proc_name: PCSTR) -> FARPROC;
-}
 
 fn main() {
     // COLLECT ARGS
@@ -44,7 +36,7 @@ fn main() {
     // GET HANDLE TO LOAD LIBRARY
 
     // having to load kernel32 differently due to problems with the crate
-    let load_library_fn_address = unsafe { GetProcAddress(h_kernel32, "LoadLibraryA\0".as_ptr()) };
+    let load_library_fn_address = unsafe { GetProcAddress(h_kernel32, s!("LoadLibraryA")) };
     let load_library_fn_address = match load_library_fn_address {
         None => panic!("[-] Could not resolve the address of LoadLibraryA."),
         Some(address) => {
